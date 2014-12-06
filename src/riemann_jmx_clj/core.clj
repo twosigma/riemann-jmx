@@ -27,9 +27,11 @@
                    name (jmx/mbean-names obj)
                    attr attr]
                {:service (str (.getCanonicalName ^javax.management.ObjectName name) \. attr)
-                :host (:host jmx)
+                :host (if (:event_host jmx)
+                        (:event_host jmx)
+                        (:host jmx))
                 :state "ok"
-                :metric (jmx/read name attr) 
+                :metric (jmx/read name attr)
                 :tags tags})))
          (mapcat (fn [{:keys [service metric] :as event}]
                    (if (map? metric)
