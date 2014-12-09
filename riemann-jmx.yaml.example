@@ -30,6 +30,9 @@ riemann :
 jmx : 
     host : localhost
     port : 9999
+    # username & password are optional; they're used for authenticated JMX
+    username : cooluser22
+    password : superSECRETpass
 
 queries : 
 -   service     : "kafka.broker.topics.all"

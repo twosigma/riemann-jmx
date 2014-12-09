@@ -51,15 +51,32 @@
     (flush)
     (riemann/send-events conn events)))
 
+(defn munge-credentials
+  "Takes a parsed yaml config and, if it has jmx username & password,
+   configures the jmx environment map properly. If only a username or
+   password is set, exits with an error"
+  [config]
+  (let [{:keys [host port username password]} (:jmx config)]
+    (when (and username (not password))
+      (println "Provided username but no password.")
+      (System/exit 1))
+    (when (and password (not username))
+      (println "Provided password but no username")
+      (System/exit 1))
+    (if (or username password)
+      (assoc config :jmx {:host host :port port :environment {"jmx.remote.credentials" (into-array String [username password])}})
+      config)))
+
 (defn start-config
   "Takes a path to a yaml config, parses it, and runs it in a loop"
   [config]
-  (let [yaml (yaml/parse-string (slurp config))]
-    (pprint yaml)
+  (let [yaml (yaml/parse-string (slurp config))
+        munged (munge-credentials yaml)]
+    (pprint munged)
     (future
       (while true
         (try
-          (run-configuration yaml)
+          (run-configuration munged)
           (Thread/sleep (* 1000 (-> yaml :riemann :interval)))
           (catch Exception e
             (.printStackTrace e)))))))
