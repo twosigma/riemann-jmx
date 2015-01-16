@@ -1,19 +1,19 @@
 # Example file borrowed from https://github.com/wikimedia/riemann-jmx
 #
 # The MIT License
-# 
+#
 # Copyright (c) 2013 David Schoonover <dsc@less.ly> and others.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,16 +22,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-riemann : 
+riemann :
     host     : localhost
     port     : 5555
     interval : 5
 
-jmx : 
+jmx :
     host : localhost
+    # event_host optional attribute to be used in report to riemann server, otherwise host attribute will be used
+    event_host : localhost-9999
     port : 9999
 
-queries : 
+queries :
 -   service     : "kafka.broker.topics.all"
     obj         : "kafka:type=kafka.BrokerAllTopicStat"
     attr        : [ BytesIn, BytesOut, FailedFetchRequest, FailedProduceRequest, MessagesIn ]
@@ -41,7 +43,7 @@ queries :
     attr    : [ AvgFlushMs, FlushesPerSecond, MaxFlushMs, NumFlushes, TotalFlushMs ]
 
 -   obj     : "kafka:type=kafka.SocketServerStats"
-    attr    : 
+    attr    :
     -   AvgFetchRequestMs
     -   AvgProduceRequestMs
     -   BytesReadPerSecond
