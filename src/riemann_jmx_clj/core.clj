@@ -78,10 +78,10 @@
     (future
       (while true
         (try
-          (run-configuration munged)
-          (Thread/sleep (* 1000 (-> yaml :riemann :interval)))
+          (run-configuration munged)   
           (catch Exception e
-            (.printStackTrace e)))))))
+            (.printStackTrace e))
+          (finally (Thread/sleep (* 1000 (-> yaml :riemann :interval)))))))))
 
 (defn -main
   [& args]
