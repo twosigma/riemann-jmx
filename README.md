@@ -23,6 +23,6 @@ See riemann-jmx.yaml.example for an example of how to write a configuration file
 
 ## License
 
-Copyright © 2013-2014 Two Sigma
+Copyright © 2013-2015 Two Sigma
 
 Distributed under the Eclipse Public License version 1.0
