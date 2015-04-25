@@ -61,3 +61,14 @@ queries :
     -   TotalBytesWritten
     -   TotalFetchRequestMs
     -   TotalProduceRequestMs
+
+-  service : "java.lang:type=Memory"
+   obj     : "java.lang:type=Memory"
+   attr    : 
+    - HeapMemoryUsage.used
+    - HeapMemoryUsage.max
+    - HeapMemoryUsage.init
+    - NonHeapMemoryUsage.used
+    - NonHeapMemoryUsage.max 
+    - NonHeapMemoryUsage.init
+    

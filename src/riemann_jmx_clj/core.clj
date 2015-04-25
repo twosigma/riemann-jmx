@@ -2,7 +2,8 @@
   (:require [clojure.java.jmx :as jmx]
             [clj-yaml.core :as yaml]
             [riemann.client :as riemann]
-            [clojure.pprint :refer (pprint)])
+            [clojure.pprint :refer (pprint)]
+            [clojure.string :as str])
   (:gen-class))
 
 (defn- get-riemann-connection-helper
@@ -23,15 +24,17 @@
   (let [{:keys [jmx queries]} yaml]
     (->> (jmx/with-connection jmx
            (doall
-             (for [{:keys [obj attr tags]} queries
+             (for [{:keys [obj attr tags service]} queries
                    name (jmx/mbean-names obj)
-                   attr attr]
-               {:service (str (.getCanonicalName ^javax.management.ObjectName name) \. attr)
+                   attr attr ]
+               {:service (if service (str service \. attr) (str (.getCanonicalName ^javax.management.ObjectName name) \. attr))
                 :host (if (:event_host jmx)
                         (:event_host jmx)
                         (:host jmx))
                 :state "ok"
-                :metric (jmx/read name attr)
+                :metric (if (re-find #"\." attr)
+                          ((jmx/read name ((str/split attr #"\.") 0)) (keyword ((str/split attr #"\.") 1)) )
+                          (jmx/read name ((str/split attr #"\.") 0))) 
                 :tags tags})))
          (mapcat (fn [{:keys [service metric] :as event}]
                    (if (map? metric)
