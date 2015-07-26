@@ -3,7 +3,8 @@
             [clj-yaml.core :as yaml]
             [riemann.client :as riemann]
             [clojure.pprint :refer (pprint)])
-  (:gen-class))
+  (:gen-class)
+  (:import (java.net InetAddress)))
 
 (defn- get-riemann-connection-helper
   [host port]
@@ -29,7 +30,7 @@
                {:service (str (.getCanonicalName ^javax.management.ObjectName name) \. attr)
                 :host (if (:event_host jmx)
                         (:event_host jmx)
-                        (:host jmx))
+                        (or (:host jmx) (.getCanonicalHostName (InetAddress/getLocalHost))))
                 :state "ok"
                 :metric (jmx/read name attr)
                 :tags tags})))
@@ -78,7 +79,7 @@
     (future
       (while true
         (try
-          (run-configuration munged)   
+          (run-configuration munged)
           (catch Exception e
             (.printStackTrace e))
           (finally (Thread/sleep (* 1000 (-> yaml :riemann :interval)))))))))
