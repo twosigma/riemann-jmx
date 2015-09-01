@@ -37,6 +37,19 @@ jmx :
     password : superSECRETpass
 
 queries :
+    # If service is set, its value will be used to set Riemann Event service (RES) field. 
+    # Otherwise, the RES value will be set to the value of the obj field, which is the full JMX object name. 
+    # This might be important in cases when using special characters (comma, collon, space, quotes, etc) in service names 
+    # creates issues with querying such metrics. One notable example is Graphite, that uses host.service.attr as a metric path, and 
+    # Grafana that has difficulties querrying metrics paths with special characters in the service field.
+    #
+    # Examples: service set to "kafka.broker.topics.all" 
+    #               => Riemann Event{:host "localhost-9999" :service "kafka.broker.topics.alli.BytesIn" ...} 
+    #               => Graphite "localhost-9999.kafka.broker.topics.all.BytesIn"
+    #
+    #           service not set,
+    #               => Riemann Event{:host "localhost-9999" :service "kafka:type=kafka.LogFlushStats" ...}
+    #               => Graphite "localhost-9999.kafka:type=kafka.LogFlushStats.AvgFlushMs"
 -   service     : "kafka.broker.topics.all"
     obj         : "kafka:type=kafka.BrokerAllTopicStat"
     attr        : [ BytesIn, BytesOut, FailedFetchRequest, FailedProduceRequest, MessagesIn ]

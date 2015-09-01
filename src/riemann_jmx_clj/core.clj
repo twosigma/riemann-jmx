@@ -24,10 +24,12 @@
   (let [{:keys [jmx queries]} yaml]
     (->> (jmx/with-connection jmx
            (doall
-             (for [{:keys [obj attr tags]} queries
+             (for [{:keys [obj attr tags service]} queries
                    name (jmx/mbean-names obj)
                    attr attr]
-               {:service (str (.getCanonicalName ^javax.management.ObjectName name) \. attr)
+               {:service (if service 
+                            (str service \. attr)
+                            (str (.getCanonicalName ^javax.management.ObjectName name) \. attr))
                 :host (if (:event_host jmx)
                         (:event_host jmx)
                         (or (:host jmx) (.getCanonicalHostName (InetAddress/getLocalHost))))
