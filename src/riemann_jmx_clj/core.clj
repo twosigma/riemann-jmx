@@ -6,17 +6,16 @@
   (:gen-class)
   (:import (java.net InetAddress)))
 
-(defn- get-riemann-connection-helper
-  [host port]
-  (doto (riemann/tcp-client :host host :port port)
-    (riemann/connect-client)))
+(def get-riemann-connection-helper
+  (memoize
+   (fn [host port]
+     (riemann/tcp-client :host host :port port))))
 
-(let [get-riemann-connection-helper (memoize get-riemann-connection-helper)]
-  (defn get-riemann-connection
-    ([host]
-     (get-riemann-connection-helper host 5555))
-    ([host port]
-     (get-riemann-connection-helper host port))))
+(defn get-riemann-connection
+  ([host]
+   (get-riemann-connection-helper host 5555))
+  ([host port]
+   (get-riemann-connection-helper host port)))
 
 (defn run-queries
   "Takes a parsed yaml config and runs the contained queries, returning a seq of Riemann events."
@@ -52,9 +51,9 @@
                (get-riemann-connection host port)
                (get-riemann-connection host))
         events (run-queries yaml)]
-    (print ".")
-    (flush)
-    (riemann/send-events conn events)))
+    @(riemann/send-events conn events)
+    (prn (format "Sent %s events to riemann" (count events)))))
+
 
 (defn munge-credentials
   "Takes a parsed yaml config and, if it has jmx username & password,
