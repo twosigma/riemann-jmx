@@ -51,9 +51,9 @@
                (get-riemann-connection host port)
                (get-riemann-connection host))
         events (run-queries yaml)]
-    @(riemann/send-events conn events)
-    (prn (format "Sent %s events to riemann" (count events)))))
-
+    (print ".")
+    (flush)
+    (riemann/send-events conn events)))
 
 (defn munge-credentials
   "Takes a parsed yaml config and, if it has jmx username & password,
