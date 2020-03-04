@@ -1,0 +1,5 @@
+Package: Riemann-Jmx
+Version: 0.1
+Architecture: all
+Description: Riemann-Jmx
+Maintainer: xyz
